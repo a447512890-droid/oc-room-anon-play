@@ -31,7 +31,8 @@ body {
 
 #canvas {
 	display: block;
- width: min(100%, calc((100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 0.56221889));
+ width: 100%;
+ max-width: calc((100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 0.75);
  height: 100%;
 }
 
@@ -39,69 +40,67 @@ body {
 	outline: none;
 }
 
-#status, #status-splash, #status-progress {
-	position: absolute;
-	left: 0;
-	right: 0;
-}
-
-#status, #status-splash {
-	top: 0;
-	bottom: 0;
-}
-
+/* Native loading UI: no generated full-screen bitmap or extra font request. */
 #status {
-	background-color: #f6e9ef;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	visibility: hidden;
+ position: fixed; inset: 0; z-index: 100;
+ display: flex; flex-direction: column; align-items: center; justify-content: center;
+ box-sizing: border-box;
+ padding: calc(env(safe-area-inset-top) + 32px) 28px calc(env(safe-area-inset-bottom) + 32px);
+ background: #F7F3ED; color: #746382;
+ font-family: ui-rounded, "PingFang SC", "Microsoft YaHei", sans-serif;
+ overflow: auto;
 }
+.loading-curtain {
+ position: absolute; inset: 0 0 auto; height: 37px; opacity: .8;
+ background: repeating-linear-gradient(90deg,#E7DDEA 0 22px,#F7F3ED 22px 24px,#DCCDF2 24px 46px);
+ border-bottom: 2px solid #B7A4CA; border-radius: 0 0 48% 48% / 0 0 24px 24px;
+}
+.loading-curtain::after { content: '✦'; position: absolute; top: 25px; left: calc(50% - 8px); color: #B7A4CA; font-size: 22px; }
+.loading-scene {
+ position: relative; width: 260px; height: 376px; flex: 0 0 auto;
+ margin-bottom: 32px; animation: pass-sway 3.6s ease-in-out infinite;
+ transform-origin: 50% 22%;
+}
+.pass-lanyard {
+ position: absolute; top: 2px; left: 49px; width: 100px; height: 45px;
+ border: 11px solid #DCCDF2; border-radius: 50%; transform: rotate(-24deg);
+ box-shadow: inset 0 0 0 1.5px #B7A4CA,0 0 0 1.5px #B7A4CA;
+}
+.pass-clip {
+ position: absolute; top: 44px; left: 115px; width: 19px; height: 43px;
+ background: #E7DDEA; border: 2px solid #89715C; border-radius: 5px; z-index: 2;
+ transform: rotate(-8deg); box-shadow: inset 0 0 0 5px #F7F3ED;
+}
+.pass-card {
+ position: absolute; top: 77px; left: 28px; width: 202px; height: 273px;
+ box-sizing: border-box; padding: 20px 18px 12px;
+ background: #FFF9F1; border: 2px solid #B7A4CA; border-radius: 12px;
+ transform: rotate(-8deg); box-shadow: 0 7px 0 #E7DDEA,0 12px 24px #74638212;
+}
+.pass-card::before { content: ''; position: absolute; inset: 5px; border: 1px dashed #C5B4CE; border-radius: 7px; pointer-events: none; }
+.pass-punch { position: absolute; top: 9px; left: 79px; width: 40px; height: 5px; background: #B7A4CA; border-radius: 4px; }
+.pass-heading { position: relative; margin: 4px 0 11px; text-align: center; font-size: 22px; line-height: 1.05; font-weight: 800; letter-spacing: 1px; }
+.pass-portrait { height: 155px; position: relative; overflow: hidden; border: 1.5px solid #C7ADC2; border-radius: 10px; background: #F2D6E2; }
+.pass-portrait img { display: block; width: 100%; height: auto; }
+.pass-star { position: absolute; right: 7px; top: 6px; color: #FFF9F1; font-size: 22px; text-shadow: 0 1px #B7A4CA; }
+.pass-barcode { margin: 10px auto 0; width: 142px; height: 14px; opacity: .75; background: repeating-linear-gradient(90deg,#B7A4CA 0 2px,transparent 2px 4px,#B7A4CA 4px 8px,transparent 8px 11px); }
+.pass-stamp { position: absolute; right: -27px; bottom: 30px; padding: 7px 9px; border: 3px double #D99AB8; border-radius: 30px; background: #FFF9F1ED; color: #C881A4; font-size: 14px; font-weight: 800; letter-spacing: 1px; transform: rotate(-12deg); }
+.loading-progress { width: min(280px, 84vw); flex: 0 0 auto; text-align: center; }
+#status-percent { display: block; min-height: 27px; margin-bottom: 9px; font-size: 16px; font-weight: 650; font-variant-numeric: tabular-nums; }
+#status-progress { display: block; appearance: none; -webkit-appearance: none; width: 100%; height: 15px; border: 1.5px solid #B7A4CA; border-radius: 20px; overflow: hidden; background: #F2D6E2; }
+#status-progress::-webkit-progress-bar { background: #F2D6E2; border-radius: 20px; }
+#status-progress::-webkit-progress-value { background: #C6AEDF; border-radius: 20px; }
+#status-progress::-moz-progress-bar { background: #C6AEDF; border-radius: 20px; }
+.loading-progress.is-indeterminate { position: relative; }
+.loading-progress.is-indeterminate::after { content: ''; display: block; position: absolute; top: 38px; left: 2%; width: 32%; height: 12px; border-radius: 20px; background: #C6AEDF; animation: loading-travel 1.5s ease-in-out infinite alternate; }
+#status-caption { margin: 17px 0 0; font-size: 17px; line-height: 1.6; }
+#status-notice { display: none; box-sizing: border-box; max-width: 380px; margin: 22px 0 0; padding: 16px; border: 1px solid #B7A4CA; border-radius: 14px; background: #E7DDEA; font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+#status[data-mode="notice"] .loading-progress { display: none; }
+@keyframes pass-sway { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@keyframes loading-travel { from { left: 2%; } to { left: 66%; } }
+@media (max-height: 650px) { .loading-scene { transform: scale(.8); animation: none; margin: -30px 0 -4px; } #status { padding-top: 24px; padding-bottom: 24px; } }
+@media (prefers-reduced-motion: reduce) { .loading-scene, .loading-progress.is-indeterminate::after { animation: none; } }
 
-#status-splash {
-	max-height: 100%;
-	max-width: 100%;
-	margin: auto;
-}
-
-#status-splash.show-image--false {
-	display: none;
-}
-
-#status-splash.fullsize--true {
-	height: 100%;
-	width: 100%;
-	object-fit: contain;
-}
-
-#status-splash.use-filter--false {
-	image-rendering: pixelated;
-}
-
-#status-progress, #status-notice {
-	display: none;
-}
-
-#status-progress {
-	bottom: 10%;
-	width: 50%;
-	margin: 0 auto;
-}
-
-#status-notice {
-	background-color: #5b3943;
-	border-radius: 0.5rem;
-	border: 1px solid #9b3943;
-	color: #e0e0e0;
-	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
-	line-height: 1.3;
-	margin: 0 2rem;
-	overflow: hidden;
-	padding: 1rem;
-	text-align: center;
-	z-index: 1;
-}
 		</style>
 		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
 <link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
@@ -117,13 +116,27 @@ body {
 			Your browser does not support JavaScript.
 		</noscript>
 
-		<div id="status">
-			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="index.png" alt="">
-			<progress id="status-progress"></progress>
-			<div id="status-notice"></div>
-		</div>
+        <div id="status" role="status" aria-live="polite" aria-busy="true">
+            <div class="loading-curtain" aria-hidden="true"></div>
+            <div class="loading-scene" aria-hidden="true">
+                <div class="pass-lanyard"></div><div class="pass-clip"></div>
+                <article class="pass-card">
+                    <div class="pass-punch"></div>
+                    <div class="pass-heading">RiNG LIVE<br>PASS</div>
+                    <div class="pass-portrait"><img src="loading-portrait-0a8355afd7.png" alt=""><span class="pass-star">✦</span></div>
+                    <div class="pass-barcode"></div>
+                    <div class="pass-stamp">ADMISSION</div>
+                </article>
+            </div>
+            <div class="loading-progress is-indeterminate">
+                <span id="status-percent">准备入场</span>
+                <progress id="status-progress" aria-label="资源载入进度"></progress>
+                <p id="status-caption">正在准备入场…</p>
+            </div>
+            <div id="status-notice"></div>
+        </div>
 
-        <button id="cache-repair" style="position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:10000;padding:12px 18px;border:1px solid #91bddb;border-radius:22px;background:#f5fbff;color:#42627a;font:16px sans-serif;cursor:pointer">修复缓存</button>
+        <button id="cache-repair" hidden style="position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:10000;padding:12px 18px;border:1px solid #91bddb;border-radius:22px;background:#f5fbff;color:#42627a;font:16px sans-serif;cursor:pointer">修复缓存</button>
         <script>
         document.getElementById('cache-repair').onclick=async function(){
          this.disabled=true;this.textContent='正在修复…';
@@ -149,12 +162,13 @@ new MutationObserver(() => {
 const gameCanvas = document.getElementById('canvas');
 function fitGameCanvas() {
  const rect = gameCanvas.getBoundingClientRect();
- gameCanvas.width = 750;
- gameCanvas.height = Math.max(1334, Math.round(750 * rect.height / Math.max(1, rect.width)));
+ const ratio = rect.height / Math.max(1, rect.width);
+ gameCanvas.width = Math.max(750, Math.round(1334 / ratio));
+ gameCanvas.height = Math.round(gameCanvas.width * ratio);
 }
 fitGameCanvas();
 new ResizeObserver(fitGameCanvas).observe(gameCanvas);
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":33626280,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":0,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":34626216,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4,"serviceWorker":"index.service.worker.js"};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 if (['localhost','127.0.0.1'].includes(location.hostname) || new URLSearchParams(location.search).has('online')) GODOT_CONFIG.serviceWorker = '';
@@ -171,17 +185,24 @@ if ('serviceWorker' in navigator && GODOT_CONFIG.serviceWorker) {
 	let initializing = true;
 	let statusMode = '';
 
+    // Some engine initialization failures reject outside startGame's returned promise.
+    function onLoadingRejection(event) {
+        if (initializing) displayFailureNotice(event.reason);
+    }
+    window.addEventListener('unhandledrejection', onLoadingRejection);
+
 	function setStatusMode(mode) {
 		if (statusMode === mode || !initializing) {
 			return;
 		}
 		if (mode === 'hidden') {
+            window.removeEventListener('unhandledrejection', onLoadingRejection);
+			statusOverlay.setAttribute('aria-busy', 'false');
 			statusOverlay.remove();
 			initializing = false;
 			return;
 		}
-		statusOverlay.style.visibility = 'visible';
-		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
+		statusOverlay.dataset.mode = mode;
 		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
 		statusMode = mode;
 	}
@@ -198,15 +219,15 @@ if ('serviceWorker' in navigator && GODOT_CONFIG.serviceWorker) {
 	}
 
 	function displayFailureNotice(err) {
+        window.removeEventListener('unhandledrejection', onLoadingRejection);
 		console.error(err);
-		if (err instanceof Error) {
-			setStatusNotice(err.message);
-		} else if (typeof err === 'string') {
-			setStatusNotice(err);
-		} else {
-			setStatusNotice('An unknown error occurred.');
-		}
+        const message = err instanceof Error ? err.message : String(err);
+        setStatusNotice(message.includes('features required')
+            ? '当前浏览器暂不支持运行，请使用较新的 Safari 或 Chrome。'
+            : '载入暂时失败，请检查网络后重新载入。');
 		setStatusMode('notice');
+        document.getElementById('cache-repair').hidden=false;
+        document.getElementById('cache-repair').textContent='重新载入';
 		initializing = false;
 	}
 
@@ -248,15 +269,22 @@ if ('serviceWorker' in navigator && GODOT_CONFIG.serviceWorker) {
 	} else {
 		setStatusMode('progress');
 		engine.startGame({
-			'onProgress': function (current, total) {
-				if (current > 0 && total > 0) {
-					statusProgress.value = current;
-					statusProgress.max = total;
-				} else {
-					statusProgress.removeAttribute('value');
-					statusProgress.removeAttribute('max');
-				}
-			},
+            'onProgress': function (current, total) {
+                if (!initializing || !statusOverlay.isConnected) return;
+                const determinate = current >= 0 && total > 0 && current < total;
+                statusProgress.closest('.loading-progress').classList.toggle('is-indeterminate', !determinate);
+                if (determinate) {
+                    statusProgress.value = current;
+                    statusProgress.max = total;
+                    document.getElementById('status-percent').textContent = Math.floor(current / total * 100) + '%';
+                    document.getElementById('status-caption').textContent = '正在准备入场…';
+                } else {
+                    statusProgress.removeAttribute('value');
+                    statusProgress.removeAttribute('max');
+                    document.getElementById('status-percent').textContent = current > 0 ? '资源已就绪' : '准备入场';
+                    document.getElementById('status-caption').textContent = current > 0 ? '正在进入小屋…' : '正在准备入场…';
+                }
+            },
 		}).then(() => {
 			setStatusMode('hidden');
             document.getElementById('cache-repair').hidden=true;
