@@ -1,5 +1,5 @@
 
-const ASSET_HASHES = {"index.wasm": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0", "index.pck": "9af5fa5e204900c82ac67269c174f1133b32597eb99a73fbe766cea90c5bdb5a"};
+const ASSET_HASHES = {"index.wasm": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0", "index.pck": "cb7c7a90a225981dfb67d2186765f11b9396ccc23d6764910152d7f116d3f64e"};
 self.addEventListener('fetch', event => {
  const url=new URL(event.request.url);
  const name=url.pathname.split('/').pop();
@@ -21,7 +21,7 @@ self.addEventListener('fetch', event => {
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1794646859|2784147';
+const CACHE_VERSION = '1794648740|2096618';
 /** @type {string} */
 const CACHE_PREFIX = 'OC-anon-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
@@ -31,7 +31,7 @@ const OFFLINE_URL = 'index.offline.html';
 const ENSURE_CROSSORIGIN_ISOLATION_HEADERS = true;
 // Files that will be cached on load.
 /** @type {string[]} */
-const CACHED_FILES = ["theme-background-2bb6180b87.svg", "loading-portrait-0a8355afd7.png","index.html","index.js","index.offline.html","index.icon.png","index.apple-touch-icon.png","index.audio.worklet.js","index.audio.position.worklet.js"];
+const CACHED_FILES = ["theme-background-2bb6180b87.svg", "loading-portrait-616e933de9.png","index.html","index.js","index.offline.html","index.icon.png","index.apple-touch-icon.png","index.audio.worklet.js","index.audio.position.worklet.js"];
 // Files that we might not want the user to preload, and will only be cached on first load.
 /** @type {string[]} */
 const CACHEABLE_FILES = ["index.wasm","index.pck"];
