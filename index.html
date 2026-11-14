@@ -140,7 +140,10 @@ body {
         <script>
         document.getElementById('cache-repair').onclick=async function(){
          this.disabled=true;this.textContent='正在清理…';
-         try {
+         // Stop in-flight resource downloads before deleting their caches.
+         window.stop();
+         let cleanupTimer;
+         const cleanup=async()=> {
           if ('serviceWorker' in navigator) {
            const base=new URL('./',location.href).href;
            const list=await navigator.serviceWorker.getRegistrations();
@@ -151,8 +154,17 @@ body {
            const names=await caches.keys();
            await Promise.all(names.filter(name => name.startsWith('OC-anon-sw-cache-') || name === 'oc-room-large-assets-v1').map(name => caches.delete(name)));
           }
+         };
+         try {
+          await Promise.race([cleanup(),new Promise((_,reject)=>{
+           cleanupTimer=setTimeout(()=>reject(new Error('清理超时')),12000);
+          })]);
           location.replace('./index.html?repair='+Date.now());
-         }catch(error){this.disabled=false;this.textContent='清理缓存';}
+         }catch(error){
+          this.disabled=false;this.textContent='清理缓存';
+          document.getElementById('status-caption').textContent='清理未完成，请关闭此页面后重新打开；存档已保留。';
+          console.warn('Cache cleanup incomplete',error);
+         }finally{clearTimeout(cleanupTimer);}
         };
         </script>
 		<script src="index.js"></script>
