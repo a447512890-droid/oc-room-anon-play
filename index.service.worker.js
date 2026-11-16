@@ -1,5 +1,5 @@
 
-const ASSET_HASHES = {"index.wasm": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0", "index.pck": "ca5d2216e45c15c432f95e56b2901b45752d9601066e5637723f3389f9a58399"};
+const ASSET_HASHES = {"index.wasm": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0", "index.pck": "7e4c872cb3fc813f945e889c283394614658803ba6b1ebdddfca0a2b36a9c795"};
 self.addEventListener('fetch', event => {
  const url=new URL(event.request.url);
  const name=url.pathname.split('/').pop();
@@ -11,7 +11,7 @@ self.addEventListener('fetch', event => {
   const cached=await cache.match(key);
   if(cached)return ensureCrossOriginIsolationHeaders(cached);
   const response=await fetch(event.request);
-  if(response.ok){try{await cache.put(key,response.clone());}catch(error){console.warn("Asset cache unavailable",error);}}
+  if(response.ok)event.waitUntil(cache.put(key,response.clone()).catch(error=>console.warn("Asset cache unavailable",error)));
   return ensureCrossOriginIsolationHeaders(response);
  })());
 });
@@ -21,7 +21,7 @@ self.addEventListener('fetch', event => {
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1794650065|2840743';
+const CACHE_VERSION = '1794754648|2377403';
 /** @type {string} */
 const CACHE_PREFIX = 'OC-anon-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
