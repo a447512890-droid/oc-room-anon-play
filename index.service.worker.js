@@ -1,5 +1,5 @@
 
-const ASSET_HASHES = {"index.wasm": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0", "index.pck": "7e4c872cb3fc813f945e889c283394614658803ba6b1ebdddfca0a2b36a9c795"};
+const ASSET_HASHES = {"index.wasm": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0", "index.pck": "c1abd684ea104817ccf490aedb354778f16f2a6a53bed353af41caa03e09891c"};
 self.addEventListener('fetch', event => {
  const url=new URL(event.request.url);
  const name=url.pathname.split('/').pop();
@@ -21,7 +21,7 @@ self.addEventListener('fetch', event => {
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1794754648|2377403';
+const CACHE_VERSION = '1794802826|2198392';
 /** @type {string} */
 const CACHE_PREFIX = 'OC-anon-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
